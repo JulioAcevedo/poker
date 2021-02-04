@@ -1,44 +1,30 @@
-require_relative "deck"
-require_relative "player"
+require_relative "interfaces/user_interface"
+require_relative "cards/deck"
+require_relative "cards/poker_hand"
+require_relative "players/player"
 
-def say_hi
-    puts '--------------------------------------------------------------'
-    puts '--------------      Welcome to a Poker Game     --------------'
-    puts '--------------------------------------------------------------'
-end
+class PokerGame
+  def initialize(how_many_players)
+    raise Exception.new("Number of players allowed: 1 to 10") unless how_many_players
+    @deck = Deck.new
+    @players = []
+    how_many_players.times { @players << Player.new(@deck.get_hand) }
+  end
 
-def say_good_bye
-    puts '--------------------------------------------------------------'
-    puts '--------------         See you nex time         --------------'
-    puts '--------------------------------------------------------------'
-end
-
-def say_wrong_values
-    puts '--------------------------------------------------------------'
-    puts '--------------   There where some wrong values  --------------'
-    puts '--------------------------------------------------------------'
-    puts " So we could not initialize objects.\n Please correct them and try again."
-end
-  
-def ask_for_players
-    puts "\nHow many players are gonna loose some money?"
-    if (number = gets.chomp.to_i).zero?
-        say_wrong_values
-        return nil 
+  def play
+    UserInterface.clear_screen
+    UserInterface.say_hi
+    @players.each do |player|
+      player.see_hand(PokerHand.calculate_poker_hand(player.hand))
     end
-
-    number
+    winner = PokerHand.decide_who_wins(@players)
+    UserInterface.say_the_winner(winner.name, winner.hand)
+    UserInterface.say_good_bye
+  end
 end
 
-system('clear')
-
-@deck = Deck.new
-say_hi
-@how_many_players = ask_for_players
-return nil unless @how_many_players or @how_many_players > 10
-@players = []
-@how_many_players.times do 
-    @players.push(Player.new(@deck))
+user_input = ""
+until ["no"].include? user_input do
+  PokerGame.new(UserInterface.ask_for_players).play
+  user_input = UserInterface.play_again?
 end
-@players.each { |player| p player.show_hand }
-say_good_bye
