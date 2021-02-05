@@ -8,6 +8,6 @@ class Card
   end
 
   def to_s
-    puts "... a #{@identifier} of #{figure} with value #{value}"
+    puts "... #{@identifier} of #{figure} with value #{value}"
   end
 end

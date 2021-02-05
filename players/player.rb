@@ -1,18 +1,19 @@
-FAKE_NAMES = [
-  "Alfred",
-  "Jorge",
-  "Geras",
-  "Erick",
-  "Majo",
-  "Julio",
-  "Verónica",
-  "Armando",
-  "LaBikla",
-  "Cualquiera",
-].freeze
 
 class Player
-  attr_reader :hand, :name
+  FAKE_NAMES = [
+    "Alfred",
+    "Jorge",
+    "Geras",
+    "Erick",
+    "Majo",
+    "Julio",
+    "Verónica",
+    "Armando",
+    "LaBikla",
+    "Cualquiera",
+  ].freeze
+
+  attr_reader :hand, :name, :resulting_hand
 
   def initialize(hand)
     @hand = hand

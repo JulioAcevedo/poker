@@ -27,8 +27,8 @@ class UserInterface
     number
   end
 
-  def self.say_the_winner(name, hand)
-    puts "#{name} is the winner having..."
+  def self.say_the_winner(name, hand_name, hand)
+    puts "#{name} is the winner having...#{hand_name}!!!"
     hand.to_s
   end
 
