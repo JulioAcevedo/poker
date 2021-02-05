@@ -13,7 +13,7 @@ class Deck
   end
 
   def hand
-    # Hand.new(deck.slice!(0, 5))
+    Hand.new(deck.slice!(0, 5))
     #### ROYAL FLUSH
     # Hand.new([
     #   Card.new("J", "spades", 10),
@@ -62,7 +62,7 @@ class Deck
     #   Card.new("2", "diamonds", 1),
     #   Card.new("A", "clover", 13),
     # ])
-    #### FULL
+    #### FULL HOUSE
     # Hand.new([
     #   Card.new("A", "spades", 13),
     #   Card.new("A", "hears", 13),
@@ -87,13 +87,29 @@ class Deck
     #   Card.new("A", "clover", 13),
     # ])
     #### TWO PAIR
-    Hand.new([
-      Card.new("A", "spades", 13),
-      Card.new("A", "hears", 13),
-      Card.new("3", "spades", 2),
-      Card.new("2", "diamonds", 1),
-      Card.new("3", "clover", 2),
-    ])
+    # Hand.new([
+    #   Card.new("A", "spades", 13),
+    #   Card.new("A", "hears", 13),
+    #   Card.new("3", "spades", 2),
+    #   Card.new("2", "diamonds", 1),
+    #   Card.new("3", "clover", 2),
+    # ])
+    #### PAIR
+    # Hand.new([
+    #   Card.new("A", "spades", 13),
+    #   Card.new("A", "hears", 13),
+    #   Card.new("3", "spades", 2),
+    #   Card.new("2", "diamonds", 1),
+    #   Card.new("4", "clover", 3),
+    # ])
+    #### NOTHING
+    # Hand.new([
+    #   Card.new("A", "spades", 13),
+    #   Card.new("J", "hears", 10),
+    #   Card.new("3", "spades", 2),
+    #   Card.new("2", "diamonds", 1),
+    #   Card.new("4", "clover", 3),
+    # ])
   end
 
   private

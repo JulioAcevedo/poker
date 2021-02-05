@@ -19,6 +19,7 @@ class PokerGame
     end
     winner = HandEvaluator.decide_who_wins(@players)
     UserInterface.say_the_winner(winner.name, winner.resulting_hand, winner.hand)
+    UserInterface.other_players(@players.select { |player| player.winner == false})
     UserInterface.say_good_bye
   end
 end

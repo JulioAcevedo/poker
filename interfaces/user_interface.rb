@@ -32,6 +32,14 @@ class UserInterface
     hand.to_s
   end
 
+  def self.other_players(players)
+    puts 'Other players results...'
+    players.each do |player|
+      puts "#{player.name} had #{player.resulting_hand}"
+      player.hand.to_s
+    end
+  end
+
   def self.play_again?
     puts '--------------------------------------------------------------'
     puts '--------------        Game finished!!!!         --------------'
