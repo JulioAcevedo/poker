@@ -1,18 +1,77 @@
 require_relative "../../cards/hand_evaluator"
 require_relative "../../cards/hand"
 require_relative "../../cards/card"
+require_relative "../../players/player.rb"
+require_relative "../resulting_hands/resulting_hands.rb"
 
 describe HandEvaluator do
-  describe "#royal_flush?" do
-    let(:cards) do
-      [
-        Card.new("10", "spades", 9),
-        Card.new("J", "spades", 10),
-        Card.new("Q", "spades", 11),
-        Card.new("K", "spades", 12),
-        Card.new("A", "spades", 13),
-      ]
+  describe "#who_wins" do
+    context "5 players with different resulting hands" do
+      let(:winner) { Player.new(Hand.new(RESULTING_HANDS[:royal_flush])) }
+      let(:players) do
+        [
+          Player.new(Hand.new(RESULTING_HANDS[:pair])),
+          Player.new(Hand.new(RESULTING_HANDS[:two_pairs])),
+          Player.new(Hand.new(RESULTING_HANDS[:high_card_ace])),
+          winner,
+          Player.new(Hand.new(RESULTING_HANDS[:straight])),
+        ]
+      end
+
+      it "wins the one with RoyalFlush hand" do
+        players.each do |player|
+          player.see_hand(HandEvaluator.calculate_poker_hand(player.hand))
+        end
+
+        expect(HandEvaluator.who_wins(players)).to eq(winner)
+      end
     end
+
+    context "5 players with same hand, but different highest card" do
+      let(:winner) { Player.new(Hand.new(RESULTING_HANDS[:three_of_aces])) }
+      let(:players) do
+        [
+          Player.new(Hand.new(RESULTING_HANDS[:pair])),
+          Player.new(Hand.new(RESULTING_HANDS[:three_of_nines])),
+          winner,
+          Player.new(Hand.new(RESULTING_HANDS[:high_card_ace])),
+          Player.new(Hand.new(RESULTING_HANDS[:two_pairs])),
+        ]
+      end
+
+      it "wins the one with Three of the Same hand with aces" do
+        players.each do |player|
+          player.see_hand(HandEvaluator.calculate_poker_hand(player.hand))
+        end
+
+        expect(HandEvaluator.who_wins(players)).to eq(winner)
+      end
+    end
+
+    context "5 players in groups of players with same hand, but different highest card" do
+      let(:winner) { Player.new(Hand.new(RESULTING_HANDS[:three_of_aces])) }
+      let(:players) do
+        [
+          Player.new(Hand.new(RESULTING_HANDS[:high_card_ace])),
+          Player.new(Hand.new(RESULTING_HANDS[:three_of_nines])),
+          winner,
+          Player.new(Hand.new(RESULTING_HANDS[:high_card_J])),
+          Player.new(Hand.new(RESULTING_HANDS[:two_pairs])),
+        ]
+      end
+
+      it "wins the one with Three of the Same hand with aces" do
+        players.each do |player|
+          player.see_hand(HandEvaluator.calculate_poker_hand(player.hand))
+        end
+
+        expect(HandEvaluator.who_wins(players)).to eq(winner)
+      end
+    end
+  end
+
+  describe "#royal_flush?" do
+    let(:cards) { RESULTING_HANDS[:royal_flush] }
     let(:hand) { Hand.new(cards) }
     let(:hand_evaluator) { HandEvaluator.new(hand) }
 
@@ -29,15 +88,7 @@ describe HandEvaluator do
   end
 
   describe "#straight_flush?" do
-    let(:cards) do
-      [
-        Card.new("2", "spades", 1),
-        Card.new("3", "spades", 2),
-        Card.new("4", "spades", 3),
-        Card.new("5", "spades", 4),
-        Card.new("6", "spades", 5),
-      ]
-    end
+    let(:cards) { RESULTING_HANDS[:straight_flush] }
     let(:hand) { Hand.new(cards) }
     let(:hand_evaluator) { HandEvaluator.new(hand) }
 
@@ -54,15 +105,7 @@ describe HandEvaluator do
   end
 
   describe "#four_of_a_kind?" do
-    let(:cards) do
-      [
-        Card.new("A", "spades", 13),
-        Card.new("A", "hears", 13),
-        Card.new("9", "spades", 8),
-        Card.new("A", "diamonds", 13),
-        Card.new("A", "clover", 13),
-      ]
-    end
+    let(:cards) { RESULTING_HANDS[:poker] }
     let(:hand) { Hand.new(cards) }
     let(:hand_evaluator) { HandEvaluator.new(hand) }
 
@@ -79,15 +122,7 @@ describe HandEvaluator do
   end
 
   describe "#full_house?" do
-    let(:cards) do
-      [
-        Card.new("A", "spades", 13),
-        Card.new("A", "hears", 13),
-        Card.new("9", "spades", 8),
-        Card.new("9", "diamonds", 8),
-        Card.new("A", "clover", 13),
-      ]
-    end
+    let(:cards) { RESULTING_HANDS[:full_house] }
     let(:hand) { Hand.new(cards) }
     let(:hand_evaluator) { HandEvaluator.new(hand) }
 
@@ -104,15 +139,7 @@ describe HandEvaluator do
   end
 
   describe "#flush?" do
-    let(:cards) do
-      [
-        Card.new("A", "spades", 13),
-        Card.new("4", "spades", 3),
-        Card.new("6", "spades", 5),
-        Card.new("K", "spades", 12),
-        Card.new("J", "spades", 10),
-      ]
-    end
+    let(:cards) { RESULTING_HANDS[:flush] }
     let(:hand) { Hand.new(cards) }
     let(:hand_evaluator) { HandEvaluator.new(hand) }
 
@@ -129,15 +156,7 @@ describe HandEvaluator do
   end
 
   describe "#straight?" do
-    let(:cards) do
-      [
-        Card.new("2", "spades", 1),
-        Card.new("3", "clover", 2),
-        Card.new("4", "spades", 3),
-        Card.new("5", "hearts", 4),
-        Card.new("6", "spades", 5),
-      ]
-    end
+    let(:cards) { RESULTING_HANDS[:straight] }
     let(:hand) { Hand.new(cards) }
     let(:hand_evaluator) { HandEvaluator.new(hand) }
 
@@ -154,15 +173,7 @@ describe HandEvaluator do
   end
 
   describe "#three_of_a_kind?" do
-    let(:cards) do
-      [
-        Card.new("A", "spades", 13),
-        Card.new("A", "hears", 13),
-        Card.new("9", "spades", 8),
-        Card.new("2", "diamonds", 1),
-        Card.new("A", "clover", 13),
-      ]
-    end
+    let(:cards) { RESULTING_HANDS[:three_of_aces] }
     let(:hand) { Hand.new(cards) }
     let(:hand_evaluator) { HandEvaluator.new(hand) }
 
@@ -179,15 +190,7 @@ describe HandEvaluator do
   end
 
   describe "#two_pairs?" do
-    let(:cards) do
-      [
-        Card.new("A", "spades", 13),
-        Card.new("A", "hears", 13),
-        Card.new("3", "spades", 2),
-        Card.new("2", "diamonds", 1),
-        Card.new("3", "clover", 2),
-      ]
-    end
+    let(:cards) { RESULTING_HANDS[:two_pairs] }
     let(:two_pair_hand) { Hand.new(cards) }
     let(:hand_evaluator) { HandEvaluator.new(two_pair_hand) }
 
@@ -204,15 +207,7 @@ describe HandEvaluator do
   end
 
   describe "#single_pair?" do
-    let(:cards) do
-      [
-        Card.new("A", "spades", 13),
-        Card.new("A", "hears", 13),
-        Card.new("3", "spades", 2),
-        Card.new("2", "diamonds", 1),
-        Card.new("4", "clover", 3),
-      ]
-    end
+    let(:cards) { RESULTING_HANDS[:pair] }
     let(:hand) { Hand.new(cards) }
     let(:hand_evaluator) { HandEvaluator.new(hand) }
 
@@ -229,15 +224,7 @@ describe HandEvaluator do
   end
 
   describe "#high_card?" do
-    let(:cards) do
-      [
-        Card.new("A", "spades", 13),
-        Card.new("J", "hears", 10),
-        Card.new("3", "spades", 2),
-        Card.new("2", "diamonds", 1),
-        Card.new("4", "clover", 3),
-      ]
-    end
+    let(:cards) { RESULTING_HANDS[:high_card_ace] }
     let(:hand) { Hand.new(cards) }
     let(:hand_evaluator) { HandEvaluator.new(hand) }
 

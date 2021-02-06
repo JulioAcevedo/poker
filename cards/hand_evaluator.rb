@@ -54,7 +54,6 @@ class HandEvaluator
 
     best_card = best_players.collect { |player| player.resulting_value }.max
     best_player = best_players.select { |player| player.resulting_value == best_card }[0]
-    # p best_players.collect { |player| "#{player.name}: #{player.resulting_value}" }
     best_player.winner = true
     best_player
   end
@@ -79,14 +78,14 @@ class HandEvaluator
   end
 
   def four_of_a_kind?
-    poker = group_and_count(@identifiers, "how_many == 4")
+    poker = group_and_count(@identifiers, 4)
     @max_value = @hand.cards.find { |card| card.identifier == poker.keys[0] }&.value
 
     !poker.empty?
   end
 
   def full_house?
-    full = group_and_count(@values, "how_many == 3 || how_many == 2")
+    full = group_and_count(@values, [3, 2])
     @max_value = full.keys.max
 
     full.length == 2 && (!@max_value.nil? && full.values.max == 3)
@@ -98,21 +97,21 @@ class HandEvaluator
   end
 
   def three_of_a_kind?
-    three = group_and_count(@values, "how_many == 3")
+    three = group_and_count(@values, 3)
     @max_value = three.keys.max
 
     three.size == 1
   end
 
   def two_pairs?
-    two = group_and_count(@values, "how_many == 2")
+    two = group_and_count(@values, 2)
     @max_value = two.keys.max
 
     two.size == 2
   end
 
   def single_pair?
-    pair = group_and_count(@values, "how_many == 2")
+    pair = group_and_count(@values, 2)
     @max_value = pair.keys[0]
 
     pair.size == 1
@@ -127,7 +126,11 @@ class HandEvaluator
     array.group_by(&:itself)
     .transform_values(&:size)
     .select do |identifier, how_many|
-      eval(rule)
+      if rule.is_a?(Integer)
+        how_many == rule
+      else
+        rule.include? how_many
+      end
     end
   end
 end
