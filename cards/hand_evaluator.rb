@@ -10,7 +10,7 @@ class HandEvaluator
     "Poker": 9,
     "Full House": 8,
     "Flush": 7,
-    "Streight": 6,
+    "Straight": 6,
     "Three of a kind": 5,
     "Two pair": 4,
     "Single pair": 3,
@@ -33,7 +33,7 @@ class HandEvaluator
     return { hand: "Poker", hand_weight: 9, value: @evaluator.max_value } if @evaluator.four_of_a_kind?
     return { hand: "Full House", hand_weight: 8, value: @evaluator.max_value } if @evaluator.full_house?
     return { hand: "Flush", hand_weight: 7, value: @evaluator.max_value } if @evaluator.flush?
-    return { hand: "Streight", hand_weight: 6, value: @evaluator.max_value } if @evaluator.straight?
+    return { hand: "Straight", hand_weight: 6, value: @evaluator.max_value } if @evaluator.straight?
     return { hand: "Three of a kind", hand_weight: 5, value: @evaluator.max_value } if @evaluator.three_of_a_kind?
     return { hand: "Two pair", hand_weight: 4, value: @evaluator.max_value } if @evaluator.two_pairs?
     return { hand: "Single pair", hand_weight: 3, value: @evaluator.max_value } if @evaluator.single_pair?
@@ -41,12 +41,9 @@ class HandEvaluator
     return { hand: "Unknown hand :(", hand_weight: 1, value: 0 }
   end
 
-  def self.decide_who_wins(players)
+  def self.who_wins(players)
     best_hand = players.collect { |player| player.hand_weight }.max
-    # p "BestHand: #{best_hand}"
     best_players = players.select { |player| player.hand_weight == best_hand }
-    # p "BestPlayers Size: #{best_players.size}"
-    # p "BestPlayers: #{best_players}"
 
     if best_players.size == 1
       best_player = best_players[0]
@@ -56,11 +53,8 @@ class HandEvaluator
     return best_player unless best_player.nil?
 
     best_card = best_players.collect { |player| player.resulting_value }.max
-    # p "BestCard: #{best_card}"
     best_player = best_players.select { |player| player.resulting_value == best_card }[0]
-    # p "Players best cards:"
-    p best_players.collect { |player| "#{player.name}: #{player.resulting_value}" }
-    # p "Winner: #{best_player}"
+    # p best_players.collect { |player| "#{player.name}: #{player.resulting_value}" }
     best_player.winner = true
     best_player
   end
@@ -95,7 +89,7 @@ class HandEvaluator
     full = group_and_count(@values, "how_many == 3 || how_many == 2")
     @max_value = full.keys.max
 
-    full.length == 2 && !@max_value.nil?
+    full.length == 2 && (!@max_value.nil? && full.values.max == 3)
   end
 
   def flush?
@@ -105,7 +99,7 @@ class HandEvaluator
 
   def three_of_a_kind?
     three = group_and_count(@values, "how_many == 3")
-    @max_value = three.values[0]
+    @max_value = three.keys.max
 
     three.size == 1
   end
@@ -128,6 +122,7 @@ class HandEvaluator
     @max_value = @values.max
   end
 
+  private
   def group_and_count(array, rule)
     array.group_by(&:itself)
     .transform_values(&:size)

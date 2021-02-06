@@ -1,5 +1,4 @@
 require_relative "../../players/player"
-require_relative "../../cards/deck"
 require_relative "../../cards/hand"
 require_relative "../../cards/card"
 
